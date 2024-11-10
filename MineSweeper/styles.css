@@ -1,0 +1,105 @@
+body {
+  padding: 0;
+  margin: 0;
+  background-color: aliceblue;
+  background-size: cover;
+  display: flex;
+}
+
+.left-panel {
+  width: 50vw;
+  height: 100vh;
+  border-right: solid;
+}
+
+.card {
+  background-color: rgb(235, 244, 251);
+  border-radius: 10%;
+  width: 75%;
+  height: 75%;
+  text-align: center;
+  border: solid;
+  border-color: #a7c4f8;
+}
+
+.leaderboard {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.categories-container {
+  background-color: #a7c4f8;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.category {
+  margin: auto;
+}
+
+.ranks {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.rank {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.right-panel {
+  width: 50vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top,
+.bottom {
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.top div {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20%;
+  padding: 0 1vw;
+  margin: auto;
+  border: solid;
+  border-width: 0.1vw;
+  border-color: rgb(232, 239, 246);
+  display: flex;
+}
+
+.top div img {
+  max-width: 2.5em;
+}
+
+.board {
+  max-height: 80vh;
+  margin: auto;
+}
+
+.bottom div {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20%;
+  padding: 0 1vw;
+  margin: auto;
+  border: solid;
+  border-width: 0.1vw;
+  border-color: rgb(232, 239, 246);
+}
+.board img {
+  /* max-width: 30vw; */
+  max-height: 75vh;
+}
