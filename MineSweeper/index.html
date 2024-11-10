@@ -2,6 +2,9 @@
 
 <html>
   <header>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minesweeper</title>
     <link rel="stylesheet" href="styles.css" />
   </header>
   <body>
@@ -33,21 +36,14 @@
         </div>
         <div>
           <img src="flag.svg" alt="" />
-          <h2>10</h2>
+          <h2 id="flag_counter"></h2>
         </div>
       </div>
-      <div class="board"><img src="game.png" alt="" /></div>
-      <div class="bottom">
-        <div style="background-color: greenyellow">
-          <h2>EASY</h2>
-        </div>
-        <div style="background-color: rgb(92, 92, 255)">
-          <h2>MEDIUM</h2>
-        </div>
-        <div style="background-color: rgb(204, 60, 204)">
-          <h2>HARD</h2>
-        </div>
+      <div class="board">
+        <div id="grid" class="grid"></div>
       </div>
+      <div id="diffRow" class="bottom"></div>
     </div>
+    <script src="script.js"></script>
   </body>
 </html>
