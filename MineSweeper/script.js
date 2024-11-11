@@ -11,6 +11,9 @@ const difficulties = {
 };
 var current_difficulty = "easy";
 
+//////////////////
+// Display functions used to render elements
+//////////////////
 function createGrid() {
   const grid = document.getElementById("grid");
   grid.style.gridTemplateColumns = `repeat(${grid_size}, ${cell_size}px)`;
@@ -37,10 +40,10 @@ function createGrid() {
       //saving its info
       cell.dataset.row = i;
       cell.dataset.column = j;
-      grid_info[i].push({ state: 0, safe: 1 });
+      grid_info[i].push({ state: 0, safe: 1, number: 0 });
       //state: what the user has done with it (0: covered, 1: uncovered, 3: flagged)
       //Safe: weather the cell has a mine or not (1: safe, 0: contains mine)
-
+      //number: number of adjacent mines
       cell.addEventListener("click", () => revealCell(cell));
       cell.addEventListener("contextmenu", (event) =>
         toggleFlagCell(event, cell)
@@ -49,13 +52,34 @@ function createGrid() {
     }
   }
   placeMines();
+  placeDistances();
   displayFlagCounter();
 }
 
+function createDifficultyButtons() {
+  button_conatiner = document.getElementById("diffRow");
+
+  for (let difficulty in difficulties) {
+    const button = document.createElement("div");
+    button.classList.add("button");
+    if (current_difficulty === difficulty) {
+      button.classList.add("selected");
+    }
+    button.dataset.difficulty = String(difficulty);
+    button.textContent =
+      difficulty.charAt(0).toUpperCase() + difficulty.slice(1); //just capitalized the first char
+    button.addEventListener("click", () => changeDifficulty(difficulty));
+    button_conatiner.appendChild(button);
+  }
+}
 function displayFlagCounter() {
   const counter = document.getElementById("flag_counter");
   counter.textContent = flags;
 }
+
+///////////////
+// Helper functions used in creating the grid
+//////////////
 function placeMines() {
   let mines_placed = 0;
 
@@ -67,16 +91,76 @@ function placeMines() {
   }
 }
 
-function revealCell(cell) {
-  let i = cell.dataset.row;
-  let j = cell.dataset.column;
+function placeDistances() {
+  //function used to set the numbers you see on the grid
+  for (let row = 0; row < grid_size; row++) {
+    for (let column = 0; column < grid_size; column++) {
+      if (grid_info[row][column].safe) {
+        let adjacent_mines = 0;
 
-  if (grid_info[i][j].state == 0) {
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            const neighbor_row = row + i;
+            const neighbor_col = column + j;
+
+            // Check if the neighboring cell is within grid bounds and contains a mine
+            if (
+              neighbor_row >= 0 &&
+              neighbor_row < grid_size &&
+              neighbor_col >= 0 &&
+              neighbor_col < grid_size &&
+              !grid_info[neighbor_row][neighbor_col].safe &&
+              grid_info[neighbor_row][neighbor_col].state === 0
+            ) {
+              adjacent_mines++;
+            }
+          }
+        }
+        grid_info[row][column].number = adjacent_mines;
+      }
+    }
+  }
+}
+
+function getCell(row, column) {
+  return document.querySelector(
+    `.cell[data-row="${row}"][data-column="${column}"]`
+  );
+}
+
+function revealCell(cell) {
+  let row = parseInt(cell.dataset.row);
+  let column = parseInt(cell.dataset.column);
+
+  if (grid_info[row][column].state == 0) {
+    //if covered
     cell.classList.remove("covered");
     cell.classList.add("uncovered");
 
-    if (grid_info[i][j].safe) {
-      grid_info[i][j].state = 1;
+    if (grid_info[row][column].safe) {
+      grid_info[row][column].state = 1;
+      if (grid_info[row][column].number == 0) {
+        //if no adjacent mines =>reveal neighboring cells
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            const neighbor_row = row + i;
+            const neighbor_col = column + j;
+
+            if (
+              neighbor_row >= 0 &&
+              neighbor_row < grid_size &&
+              neighbor_col >= 0 &&
+              neighbor_col < grid_size &&
+              grid_info[neighbor_row][neighbor_col].safe
+            ) {
+              const n_cell = getCell(neighbor_row, neighbor_col);
+              revealCell(n_cell);
+            }
+          }
+        }
+      } else {
+        cell.textContent = grid_info[row][column].number;
+      }
       ///////
       // Gotta reveal surrounding cells
       ///////
@@ -109,7 +193,7 @@ function gameOver(win) {
   if (win) {
     console.log("Mabrouk");
   } else {
-    console.lof("Sorry");
+    console.log("Sorry");
   }
 }
 
@@ -147,23 +231,6 @@ function changeDifficulty(new_difficulty) {
   }
   button_conatiner.innerHTML = "";
   createDifficultyButtons();
-}
-
-function createDifficultyButtons() {
-  button_conatiner = document.getElementById("diffRow");
-
-  for (let difficulty in difficulties) {
-    const button = document.createElement("div");
-    button.classList.add("button");
-    if (current_difficulty === difficulty) {
-      button.classList.add("selected");
-    }
-    button.dataset.difficulty = String(difficulty);
-    button.textContent =
-      difficulty.charAt(0).toUpperCase() + difficulty.slice(1); //just capitalized the first char
-    button.addEventListener("click", () => changeDifficulty(difficulty));
-    button_conatiner.appendChild(button);
-  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
