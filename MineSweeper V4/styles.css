@@ -128,8 +128,8 @@ body {
   border-color: transparent;
 }
 .cell.uncovered {
-  background-color: #9abbf8;
-  border-radius: 0px;
+  background-color: #98b3e4;
+  border-radius: 5px;
 }
 
 /*/////////////
