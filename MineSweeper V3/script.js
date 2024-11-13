@@ -2,12 +2,14 @@ var grid_size = 8;
 var cell_size = 40;
 var mines = 10;
 var flags = mines;
+var total_safe_cells = grid_size * grid_size - flags;
+var cleared_cells = 0;
 var clock;
 var gameStarted = false;
 var current_clock = 0;
 var gamer_tag;
 let game_history;
-const grid_info = [];
+var grid_info = [];
 const difficulties = {
   easy: { grid_size: 8, cell_size: 40, mines: 10 },
   medium: { grid_size: 16, cell_size: 30, mines: 40 },
@@ -23,6 +25,7 @@ function createGrid() {
   const grid = document.getElementById("grid");
   grid.style.gridTemplateColumns = `repeat(${grid_size}, ${cell_size}px)`;
   grid.style.gridTemplateRows = `repeat(${grid_size}, ${cell_size}px)`;
+  cleared_cells = 0; //resetting the number of cleared cells
 
   if (current_difficulty == "hard") {
     grid.style.gap = "2px";
@@ -56,7 +59,6 @@ function createGrid() {
       grid.appendChild(cell);
     }
   }
-  clearGrid();
   clearTimerData();
   placeMines();
   placeDistances();
@@ -95,15 +97,6 @@ function clearTimerData() {
   current_clock = 0;
 
   document.getElementById("clock").innerHTML = "0:00";
-}
-
-function clearGrid() {
-  for (let row = 0; row < grid_size; row++) {
-    for (let column = 0; column < grid_size; column++) {
-      grid_info[row][column].safe = 1;
-      grid_info[row][column].state = 0;
-    }
-  }
 }
 
 function placeMines() {
@@ -169,6 +162,11 @@ function revealCell(cell) {
 
     if (grid_info[row][column].safe) {
       grid_info[row][column].state = 1;
+      cleared_cells++;
+      if (cleared_cells == total_safe_cells) {
+        //if user wins
+        gameOver(1);
+      }
       if (grid_info[row][column].number == 0) {
         //if no adjacent mines =>reveal neighboring cells
         for (let i = -1; i <= 1; i++) {
@@ -191,12 +189,38 @@ function revealCell(cell) {
       } else {
         cell.textContent = grid_info[row][column].number;
       }
-      ///////
-      // Gotta reveal surrounding cells
-      ///////
     } else {
       cell.textContent = "💣";
       gameOver();
+    }
+  }
+}
+
+function revealGrid() {
+  //used to reveal the whole grid once the user losses
+  for (let row = 0; row < grid_size; row++) {
+    for (let column = 0; column < grid_size; column++) {
+      cell = getCell(parseInt(row), parseInt(column));
+
+      if (grid_info[row][column].state != 1) {
+        if (grid_info[row][column].state == 2) {
+          //if flagged
+          cell.textContent = "";
+        }
+
+        //if covered
+        cell.classList.remove("covered");
+        cell.classList.add("uncovered");
+        grid_info[row][column].state = 1;
+
+        if (grid_info[row][column].safe) {
+          if (grid_info[row][column].number != 0) {
+            cell.textContent = grid_info[row][column].number;
+          }
+        } else {
+          cell.textContent = "💣";
+        }
+      }
     }
   }
 }
@@ -226,6 +250,7 @@ function gameOver(win) {
     saveGame();
   } else {
     console.log("Sorry");
+    revealGrid();
   }
 
   console.log(clearInterval(clock)); // time
@@ -238,6 +263,8 @@ function changeGridSize(new_size, new_cell_size, new_mines) {
   mines = new_mines;
   flags = mines;
   cell_size = new_cell_size;
+  total_safe_cells = grid_size * grid_size - flags;
+  grid_info = [];
   //modifying the grid class
   createGrid();
 }
