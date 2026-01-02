@@ -1,4 +1,4 @@
-# Minesweeper (Vanilla JS)
+# Minesweeper
 
 A simple Minesweeper game made in plain HTML/CSS/JS. (Originally made for a web development course at LAU)
 
